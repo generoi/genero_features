@@ -13,24 +13,6 @@ function blog_panels_feature_default_page_manager_handlers() {
   $handler = new stdClass();
   $handler->disabled = FALSE; /* Edit this to true to make a default handler disabled initially */
   $handler->api_version = 1;
-  $handler->name = 'node_view_panelizer';
-  $handler->task = 'node_view';
-  $handler->subtask = '';
-  $handler->handler = 'panelizer_node';
-  $handler->weight = -100;
-  $handler->conf = array(
-    'title' => 'Node panelizer',
-    'context' => 'argument_entity_id:node_1',
-    'access' => array(
-      'plugins' => array(),
-      'logic' => 'and',
-    ),
-  );
-  $export['node_view_panelizer'] = $handler;
-
-  $handler = new stdClass();
-  $handler->disabled = FALSE; /* Edit this to true to make a default handler disabled initially */
-  $handler->api_version = 1;
   $handler->name = 'term_view_panel_context';
   $handler->task = 'term_view';
   $handler->subtask = '';
