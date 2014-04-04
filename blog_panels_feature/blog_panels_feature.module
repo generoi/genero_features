@@ -1,0 +1,165 @@
+<?php
+/**
+ * @file
+ * Code for the Blog Panels Feature feature.
+ */
+
+include_once 'blog_panels_feature.features.inc';
+
+function blog_panels_feature_ctools_content_subtype_alter(&$subtype, &$plugin) {
+  $exclude_modules = array(
+    'ds',
+  );
+  $exclude_categories = array(
+    t('Miscellaneous'),
+    t('Page elements'),
+    t('Reusable Content'),
+  );
+  if (in_array($plugin['module'], $exclude_modules)) {
+    $subtype['create content access'] = 'blog_panels_feature_ctools_content_access';
+  }
+  if (in_array($subtype['category'], $exclude_categories)) {
+    $subtype['create content access'] = 'blog_panels_feature_ctools_content_access';
+  }
+  if (!user_access('administer advanced blog features')) {
+    $subtype['top level'] = TRUE;
+  }
+}
+
+function blog_panels_feature_ctools_content_access($plugin, $subtype) {
+  return user_access('administer advanced blog features');
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function blog_panels_feature_menu_alter(&$items) {
+  $restricted = array(
+    'admin/structure/fieldable-panels-panes/view/%fieldable_panels_panes/access',
+    'admin/structure/fieldable-panels-panes/view/%fieldable_panels_panes/revision',
+    'admin/structure/pages',
+    'admin/structure/menu/manage/management',
+    'admin/structure/menu/manage/navigation',
+    'admin/structure/menu/manage/user-menu',
+  );
+  foreach ($restricted as $item) {
+    $items[$item]['access callback'] = 'user_access';
+    $items[$item]['access arguments'] = array('administer advanced blog features');
+  }
+}
+
+/**
+ * Implements hook_page_build().
+ */
+function blog_panels_feature_page_build(&$page) {
+  // @TODO check if its needed or not.
+  drupal_add_library('system', 'ui.tabs');
+}
+
+/**
+ * Implements hook_permission().
+ */
+function blog_panels_feature_permission() {
+  return array(
+    'administer advanced blog features' => array(
+      'title' => t('Administer Advanced Blog Features'),
+      'description' => t('Custom permission to hide several advanced features from regular bloggers.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function blog_panels_feature_form_alter(&$form, &$form_state, $form_id) {
+  // Content listing pane
+  if ($form_id == 'views_content_views_panes_content_type_edit_form') {
+    // Disable table and field view, only allow rendered entities.
+    $form['display_settings']['view_settings']['#access'] = user_access('administer advanced blog features');
+    $form['display_settings']['header_type']['#access'] = user_access('administer advanced blog features');
+    // Remove revision and revision comparison as a view mode.
+    unset($form['content_settings']['view_mode']['#options']['revision']);
+    unset($form['content_settings']['view_mode']['#options']['diff_standard']);
+  }
+
+  // Fieldable panel panes
+  if ($form_id == 'fieldable_panels_panes_fieldable_panels_pane_content_type_edit_form') {
+    // Simplify by removing cryptic options.
+    $form['widget_settings']['view_mode']['#access'] = user_access('administer advanced blog features');
+    $form['widget_settings']['reusable']['#access'] = user_access('administer advanced blog features');
+  }
+  if ($form_id == 'fieldable_panels_panes_entity_edit_form') {
+    // Simplify by removing cryptic options.
+    $form['reusable']['#access'] = user_access('administer advanced blog features');
+    $form['revision']['#access'] = user_access('administer advanced blog features');
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function blog_panels_feature_form_panel_node_form_alter(&$form, &$form_state) {
+  // Simplify the `Page` content type creation form.
+  $form['panels_node']['css_id']['#access'] = user_access('administer advanced blog features');
+  if (!user_access('administer advanced blog features')) {
+    $form['panels_node']['pipeline']['#type'] = 'hidden';
+    $form['panels_node']['pipeline']['#value'] = 'ipe';
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter()
+ */
+function blog_panels_feature_module_implements_alter(&$implementations, $hook) {
+  // Move our hook after panopoly_magic.
+  if ($hook == 'form_alter') {
+    $group = $implementations['blog_panels_feature'];
+    unset($implementations['blog_panels_feature']);
+    $implementations['blog_panels_feature'] = $group;
+  }
+  // Remove FAPE from fields, we use Edit instead.
+  if ($hook == 'panels_pane_content_alter') {
+    unset($implementations['fape']);
+  }
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function blog_panels_feature_preprocess_node(&$variables) {
+  // Add Quick Edit and Edit buttons to the IPE toolbar when possible.
+  if ($variables['view_mode'] == 'full' && node_is_page($variables['node'])) {
+    if (user_access('access in-place editing') && node_access('update', $variables['node'])) {
+      $node_uri = entity_uri('node', $variables['node']);
+      drupal_add_js(drupal_get_path('module', 'blog_panels_feature') . '/blog_panels_feature.js');
+      drupal_add_js(array('blogPanelsFeature' => array('entity' => $node_uri['path'])), 'setting');
+      $quick_edit_button = array(
+        '#type' => 'link',
+        '#title' => 'Quick Edit',
+        '#href' => $node_uri['path'] . '/edit',
+        '#options' => $node_uri['options'],
+        '#id' => 'panels-ipe-quick-edit',
+        '#attributes' => array(
+          'class' => array('panels-ipe-pseudobutton'),
+        ),
+        '#prefix' => '<div class="panels-ipe-pseudobutton-container">',
+        '#suffix' => '</div>',
+      );
+
+      panels_ipe_toolbar_add_button('quick-edit', 'panels-ipe-quick-edit', $quick_edit_button);
+      $edit_button = array(
+        '#type' => 'link',
+        '#title' => 'Edit Page',
+        '#href' => $node_uri['path'] . '/edit',
+        '#options' => $node_uri['options'],
+        '#id' => 'panels-ipe-edit',
+        '#attributes' => array(
+          'class' => array('panels-ipe-pseudobutton'),
+        ),
+        '#prefix' => '<div class="panels-ipe-pseudobutton-container">',
+        '#suffix' => '</div>',
+      );
+      panels_ipe_toolbar_add_button('edit', 'panels-ipe-edit', $edit_button);
+    }
+  }
+}

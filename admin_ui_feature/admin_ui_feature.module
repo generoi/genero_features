@@ -1,0 +1,220 @@
+<?php
+/**
+ * @file
+ * Code for the Admin UI feature feature.
+ */
+
+include_once 'admin_ui_feature.features.inc';
+
+/**
+ * Implements hook_menu_alter().
+ */
+function admin_ui_feature_menu_alter(&$items) {
+  // Dont let anyone access configuration page
+  $items['admin/config']['access arguments'] = array('administer site configuration');
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function admin_ui_feature_form_alter(&$form, &$form_state, $form_id) {
+  // Only work on node forms.
+  if (!strpos($form_id, '_node_form')) {
+    return;
+  }
+
+  $form['#attached']['css'][] = drupal_get_path('module', 'admin_ui_feature') . '/admin_ui_feature.css';
+
+  // Improve the title field
+  if (isset($form['title']['#title'])) {
+    $form['title']['#attributes']['placeholder'] = $form['title']['#title'];
+  }
+
+  // Improve the URL selection form
+  if (isset($form['path']) && isset($form['path']['alias'])) {
+    $form['path']['#type'] = 'container'; // remove the fieldset
+    unset($form['path']['alias']['#description']);
+    $form['path']['alias']['#title'] = '<strong>' . t('Permalink') . ':</strong> ';
+    $form['path']['alias']['#title'] .= (isset($_SERVER['HTTPS'])) ? 'https://' . $_SERVER['HTTP_HOST'] . '/' : 'http://' . $_SERVER['HTTP_HOST'] . '/';
+
+    unset($form['path']['#group']);
+
+    if (isset($form['path']['pathauto'])) {
+      $form['path']['alias']['#states'] = array();
+      if (!$form['path']['alias']['#default_value']) {
+        $form['path']['alias']['#attributes'] = array('placeholder' => '<' . t('magically generated') . '>');
+      }
+      $form['path']['pathauto']['#weight'] = 10;
+      unset($form['path']['pathauto']['#description']);
+      $form['#submit'][] = 'admin_ui_feature_pathauto_submit';
+    }
+  }
+
+  // Improve publishing options.
+  $form['options']['status']['#access'] = FALSE;
+  $form['options']['promote']['#access'] = FALSE;
+  $form['options']['sticky']['#title'] = t('Featured content');
+
+  // Provide an unpublish/publish button instead of a checkbox.
+  $form['actions']['publishing'] = array(
+    '#type' => 'submit',
+    '#value' => t('Unpublish'),
+    '#submit' => array(
+      'admin_ui_feature_node_form_submit',
+      'node_form_submit',
+    ),
+    '#weight' => 6,
+  );
+
+  // If creating a new node.
+  if (is_null($form['nid']['#value'])) {
+    $form['actions']['submit']['#value'] = t('Publish');
+    $form['actions']['publishing']['#value'] = t('Save as draft');
+  }
+  // If saving a published node.
+  elseif ($form['#node']->status == NODE_PUBLISHED) {
+    $form['actions']['publishing']['#value'] = t('Unpublish');
+  }
+  // If saving an unpublished node.
+  elseif ($form['#node']->status == NODE_NOT_PUBLISHED) {
+    $form['actions']['publishing']['#value'] = t('Publish');
+  }
+
+  // Add clearfix to node body container to prevent clearing issue with
+  // vertical tabs - @see https://drupal.org/node/1686500
+  if (isset($form['body']['#type']) && $form['body']['#type'] == 'container') {
+    $form['body']['#attributes']['class'][] = 'clearfix';
+  }
+
+  // Improve authoring options
+  if (isset($form['author'])) {
+    unset($form['author']['name']['#description']);
+    $form['author']['name']['#title'] = t('Author');
+    $form['author']['name']['#size'] = '40';
+    $form['author']['name']['#weight'] = 4;
+    $form['author']['date']['#weight'] = 5;
+
+    $form['author']['date']['#title_display'] = 'invisible';
+    $form['author']['date']['#size'] = 7;
+  }
+
+  // Improve the revision interface
+  if (!empty($form['revision_information']['revision']['#access'])) {
+    $form['revision_information']['log']['#states'] = array(
+      'visible' => array(
+        'input[name="revision"]' => array('checked' => TRUE)
+      )
+    );
+    $form['revision_information']['log']['#weight'] = 10;
+    $form['revision_information']['log']['#title_display'] = 'invisible';
+    $form['revision_information']['revision']['#weight'] = 9;
+    $form['options']['revision'] = $form['revision_information']['revision'];
+    $form['options']['log'] = $form['revision_information']['log'];
+    unset($form['revision_information']['#type']);
+    unset($form['revision_information']['log']);
+    unset($form['revision_information']['revision']);
+  }
+
+  // Improve menu options
+  if (isset($form['menu']) && isset($form['menu']['enabled']) && $form['menu']['#access']) {
+    $form['menu']['link']['description']['#access'] = FALSE;
+    $form['menu']['link']['weight']['#access'] = FALSE;
+    $form['menu']['link']['link_title']['#title'] = t('Title');
+    $form['menu']['link']['link_title']['#size'] = '20';
+    $form['menu']['link']['parent']['#title'] = t('Parent');
+  }
+
+  // Improve comment options
+  if (isset($form['comment_settings'])) {
+    foreach (element_children($form['comment_settings']['comment']) as $key) {
+      if (isset($form['comment_settings']['comment'][$key]['#description'])) {
+        unset($form['comment_settings']['comment'][$key]['#description']);
+      }
+    }
+  }
+
+  // Improve featured fields
+  $featured_category = variable_get('admin_ui_feature_featured_category', 'field_blog_entry_category');
+  $featured_image = variable_get('admin_ui_feature_featured_image', 'field_image');
+  if (isset($form[$featured_category])) {
+    $langcode = field_language('node', $form['#node'], $featured_category);
+    $form[$featured_category][$langcode]['#size'] = 40;
+  }
+
+  // Create a sidebar based layout
+  $form['sidebar'] = array(
+    '#type' => 'container',
+    '#attributes' => array('class' => array('node-form-sidebar')),
+    '#weight' => 99,
+  );
+  $form['main_start'] = array(
+    '#markup' => '<div class="node-form-main clearfix">',
+    '#weight' => -10,
+  );
+  $form['main_end'] = array(
+    '#markup' => '</div>',
+    '#weight' => 98,
+  );
+
+  // Move additional setings (vertical tabs) below the new layout so it spans 
+  // 100%.
+  $form['additional_settings']['#weight'] = 101;
+
+  // Move essential options to the sidebar.
+  $weight = 0;
+  foreach (array($featured_image, $featured_category, 'options', 'revision_information', 'menu', 'comment_settings', 'author', 'actions') as $fieldset) {
+    if (isset($form[$fieldset])) {
+      $form['sidebar'][$fieldset] = $form[$fieldset];
+      $form['sidebar'][$fieldset]['#collapsible'] = FALSE;
+      $form['sidebar'][$fieldset]['#collapsed'] = FALSE;
+      $form['sidebar'][$fieldset]['#weight'] = $weight++;
+      unset($form['sidebar'][$fieldset]['#group']);
+      unset($form[$fieldset]);
+    }
+  }
+}
+
+/**
+ * Implementation of hook_module_implements_alter()
+ */
+function admin_ui_feature_module_implements_alter(&$implementations, $hook) {
+  // Run our hook last.
+  if ($hook == 'form_alter') {
+    $group = $implementations['admin_ui_feature'];
+    unset($implementations['admin_ui_feature']);
+    $implementations['admin_ui_feature'] = $group;
+  }
+}
+
+/**
+ * Submit function for adding publishing settings
+ */
+function admin_ui_feature_node_form_submit($form, &$form_state) {
+  // If the user clicked the publishing button and the node is published,
+  // unpublish it.
+  if ($form_state['node']->status == NODE_PUBLISHED) {
+    $form_state['values']['status'] = NODE_NOT_PUBLISHED;
+    $form_state['input']['status'] = NODE_NOT_PUBLISHED;
+  }
+  // If the node was published, unpublish it.
+  else {
+    $form_state['values']['status'] = NODE_PUBLISHED;
+    $form_state['input']['status'] = NODE_PUBLISHED;
+  }
+}
+
+/**
+ * Submit function for adding pathauto settings
+ */
+function admin_ui_feature_pathauto_submit($form, &$form_state) {
+  // If the user hasn't specified a path, autogenerate
+  if (empty($form_state['input']['path']['alias'])) {
+    $form_state['values']['path']['pathauto'] = TRUE;
+    $form_state['input']['path']['pathauto'] = TRUE;
+  }
+  // If the user has specified a path, dont autogenerate
+  else {
+    $form_state['values']['path']['pathauto'] = FALSE;
+    $form_state['input']['path']['pathauto'] = FALSE;
+  }
+}

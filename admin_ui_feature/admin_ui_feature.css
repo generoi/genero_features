@@ -1,0 +1,45 @@
+@media only screen and (min-width: 1030px) {
+  .node-form-sidebar {
+    float: right;
+    width: 30%;
+  }
+  .node-form-main {
+    width: 68%;
+    float: left;
+  }
+}
+
+/* clear float from floated layout so vertial-tabs appear with full width */
+.node-form-main ~ .vertical-tabs {
+  clear: both;
+}
+
+/* Make the title field larger and remove the unnecessary title */
+.node-form-main .form-item-title label { display: none; }
+.node-form-main .form-item-title input { width: 100%; font-size: 2em; }
+
+/* Make path input compact and small */
+.node-form-main .form-item-path-alias { display: inline-block; margin-bottom: 0; }
+.node-form-main .form-item-path-alias input { max-width: 400px; font-size: .8em; }
+.node-form-main .form-item-path-pathauto { display: none; }
+.node-form-main .form-item-path-alias label {
+  font-size: .8em;
+  margin-right: 0;
+  display: inline-block;
+}
+
+/* make author field responsive */
+.node-form-sidebar .form-item-name input { width: 100%; }
+.node-form-sidebar .form-item-date .description {
+  display: none;
+}
+
+/* make menu settings more compact */
+.node-form-sidebar .form-item-menu-link-title label,
+.node-form-sidebar .form-item-menu-parent label { display: inline-block; }
+
+/* remove unnecessary padding from authored date */
+.node-form-sidebar .date-padding {
+  padding: 0;
+}
+.node-form-sidebar fieldset { border-left: 0; border-right: 0; border-bottom: 0; margin: 0; }
