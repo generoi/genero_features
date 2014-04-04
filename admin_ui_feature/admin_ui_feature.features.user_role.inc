@@ -13,7 +13,8 @@ function admin_ui_feature_user_default_roles() {
   // Exported role: administrator.
   $roles['administrator'] = array(
     'name' => 'administrator',
-    'weight' => 2,
+    'weight' => 3,
+    'machine_name' => 'administrator',
   );
 
   return $roles;

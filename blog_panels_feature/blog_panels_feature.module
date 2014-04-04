@@ -26,6 +26,9 @@ function blog_panels_feature_ctools_content_subtype_alter(&$subtype, &$plugin) {
   }
 }
 
+/**
+ * Access callback used to restrict ctools content pane access.
+ */
 function blog_panels_feature_ctools_content_access($plugin, $subtype) {
   return user_access('administer advanced blog features');
 }
@@ -77,6 +80,8 @@ function blog_panels_feature_form_alter(&$form, &$form_state, $form_id) {
     // Disable table and field view, only allow rendered entities.
     $form['display_settings']['view_settings']['#access'] = user_access('administer advanced blog features');
     $form['display_settings']['header_type']['#access'] = user_access('administer advanced blog features');
+    // Disable field overrides as we only support entty render
+    $form['fields_override']['#access'] = user_access('administer advanced blog features');
     // Remove revision and revision comparison as a view mode.
     unset($form['content_settings']['view_mode']['#options']['revision']);
     unset($form['content_settings']['view_mode']['#options']['diff_standard']);
