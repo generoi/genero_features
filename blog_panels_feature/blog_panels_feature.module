@@ -145,7 +145,7 @@ function blog_panels_feature_preprocess_node(&$variables) {
         '#options' => $node_uri['options'],
         '#id' => 'panels-ipe-quick-edit',
         '#attributes' => array(
-          'class' => array('panels-ipe-pseudobutton'),
+          'class' => array('panels-ipe-pseudobutton', 'overlay-exclude'),
         ),
         '#prefix' => '<div class="panels-ipe-pseudobutton-container">',
         '#suffix' => '</div>',
