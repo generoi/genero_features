@@ -1025,6 +1025,190 @@ function basic_shop_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'reply-product_reviews-field_basic_text_text'
+  $field_instances['reply-product_reviews-field_basic_text_text'] = array(
+    'bundle' => 'product_reviews',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(
+          'edit' => array(
+            'editor' => 'plain_text',
+          ),
+        ),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+      'full' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(
+          'edit' => array(
+            'editor' => 'plain_text',
+          ),
+        ),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+    ),
+    'ds_extras_field_template' => '',
+    'entity_type' => 'reply',
+    'exclude_cv' => 0,
+    'field_name' => 'field_basic_text_text',
+    'label' => 'Text',
+    'required' => 1,
+    'settings' => array(
+      'exclude_cv' => FALSE,
+      'linkit' => array(
+        'button_text' => 'Search',
+        'enable' => 0,
+        'profile' => '',
+      ),
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 3,
+    ),
+  );
+
+  // Exported field_instance: 'reply-product_reviews-field_content_title'
+  $field_instances['reply-product_reviews-field_content_title'] = array(
+    'bundle' => 'product_reviews',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(
+          'edit' => array(
+            'editor' => 'plain_text',
+          ),
+        ),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'full' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(
+          'edit' => array(
+            'editor' => 'plain_text',
+          ),
+        ),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'ds_extras_field_template' => '',
+    'entity_type' => 'reply',
+    'exclude_cv' => 0,
+    'field_name' => 'field_content_title',
+    'label' => 'Title',
+    'required' => 1,
+    'settings' => array(
+      'exclude_cv' => FALSE,
+      'linkit' => array(
+        'button_text' => 'Search',
+        'enable' => 0,
+        'profile' => '',
+      ),
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  // Exported field_instance: 'reply-product_reviews-field_review_vote'
+  $field_instances['reply-product_reviews-field_review_vote'] = array(
+    'bundle' => 'product_reviews',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'module' => 'fivestar',
+        'settings' => array(
+          'edit' => array(
+            'editor' => 'form',
+          ),
+          'expose' => TRUE,
+          'style' => 'average',
+          'text' => 'none',
+          'widget' => array(
+            'fivestar_widget' => 'sites/all/modules/contrib/fivestar/widgets/oxygen/oxygen.css',
+          ),
+        ),
+        'type' => 'fivestar_formatter_default',
+        'weight' => 3,
+      ),
+      'full' => array(
+        'label' => 'hidden',
+        'module' => 'fivestar',
+        'settings' => array(
+          'edit' => array(
+            'editor' => 'form',
+          ),
+          'expose' => TRUE,
+          'style' => 'average',
+          'text' => 'none',
+          'widget' => array(
+            'fivestar_widget' => 'sites/all/modules/contrib/fivestar/widgets/oxygen/oxygen.css',
+          ),
+        ),
+        'type' => 'fivestar_formatter_default',
+        'weight' => 3,
+      ),
+    ),
+    'ds_extras_field_template' => '',
+    'entity_type' => 'reply',
+    'exclude_cv' => 0,
+    'field_name' => 'field_review_vote',
+    'label' => 'Review Vote',
+    'required' => 1,
+    'settings' => array(
+      'allow_clear' => 0,
+      'allow_ownvote' => 0,
+      'allow_revote' => 0,
+      'exclude_cv' => FALSE,
+      'stars' => 5,
+      'target' => 'none',
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'fivestar',
+      'settings' => array(
+        'widget' => array(
+          'fivestar_widget' => 'sites/all/modules/contrib/fivestar/widgets/oxygen/oxygen.css',
+        ),
+      ),
+      'type' => 'stars',
+      'weight' => 2,
+    ),
+  );
+
   // Exported field_instance: 'taxonomy_term-color-field_category_color'
   $field_instances['taxonomy_term-color-field_category_color'] = array(
     'bundle' => 'color',
@@ -1091,7 +1275,10 @@ function basic_shop_field_default_field_instances() {
   t('Price');
   t('Product Reviews');
   t('Product variations');
+  t('Review Vote');
   t('Size');
+  t('Text');
+  t('Title');
   t('Vote');
 
   return $field_instances;
