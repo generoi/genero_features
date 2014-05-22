@@ -18,7 +18,6 @@ dependencies[] = commerce_backoffice_product
 dependencies[] = commerce_bean
 dependencies[] = commerce_cart
 dependencies[] = commerce_checkout_progress
-dependencies[] = commerce_checkout_redirect
 dependencies[] = commerce_customer
 dependencies[] = commerce_customer_ui
 dependencies[] = commerce_extra_price_formatters
