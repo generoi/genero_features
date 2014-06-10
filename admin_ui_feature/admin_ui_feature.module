@@ -135,7 +135,7 @@ function admin_ui_feature_form_alter(&$form, &$form_state, $form_id) {
 
   // Improve featured fields
   $featured_category = variable_get('admin_ui_feature_featured_category', 'field_blog_entry_category');
-  $featured_image = variable_get('admin_ui_feature_featured_image', 'field_image');
+  // $featured_image = variable_get('admin_ui_feature_featured_image', 'field_image');
   if (isset($form[$featured_category])) {
     $langcode = field_language('node', $form['#node'], $featured_category);
     $form[$featured_category][$langcode]['#size'] = 40;
@@ -156,13 +156,14 @@ function admin_ui_feature_form_alter(&$form, &$form_state, $form_id) {
     '#weight' => 98,
   );
 
-  // Move additional setings (vertical tabs) below the new layout so it spans 
+  // Move additional setings (vertical tabs) below the new layout so it spans
   // 100%.
   $form['additional_settings']['#weight'] = 101;
 
   // Move essential options to the sidebar.
   $weight = 0;
-  foreach (array($featured_image, $featured_category, 'options', 'revision_information', 'menu', 'comment_settings', 'author', 'actions') as $fieldset) {
+  // foreach (array($featured_image, $featured_category, 'options', 'revision_information', 'menu', 'comment_settings', 'author', 'actions') as $fieldset) {
+  foreach (array($featured_category, 'options', 'revision_information', 'menu', 'comment_settings', 'author', 'actions') as $fieldset) {
     if (isset($form[$fieldset])) {
       $form['sidebar'][$fieldset] = $form[$fieldset];
       $form['sidebar'][$fieldset]['#collapsible'] = FALSE;
