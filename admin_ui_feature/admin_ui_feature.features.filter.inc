@@ -10,6 +10,43 @@
 function admin_ui_feature_filter_default_formats() {
   $formats = array();
 
+  // Exported format: Filtered HTML.
+  $formats['filtered_html'] = array(
+    'format' => 'filtered_html',
+    'name' => 'Filtered HTML',
+    'cache' => 1,
+    'status' => 1,
+    'weight' => -9,
+    'filters' => array(
+      'filter_url' => array(
+        'weight' => -46,
+        'status' => 1,
+        'settings' => array(
+          'filter_url_length' => 72,
+        ),
+      ),
+      'filter_html' => array(
+        'weight' => -45,
+        'status' => 1,
+        'settings' => array(
+          'allowed_html' => '<a> <em> <strong> <cite> <blockquote> <code> <ul> <ol> <li> <dl> <dt> <dd> <p>',
+          'filter_html_help' => 1,
+          'filter_html_nofollow' => 1,
+        ),
+      ),
+      'media_filter' => array(
+        'weight' => -44,
+        'status' => 1,
+        'settings' => array(),
+      ),
+      'filter_autop' => array(
+        'weight' => -43,
+        'status' => 1,
+        'settings' => array(),
+      ),
+    ),
+  );
+
   // Exported format: Full HTML.
   $formats['full_html'] = array(
     'format' => 'full_html',
@@ -20,43 +57,6 @@ function admin_ui_feature_filter_default_formats() {
     'filters' => array(
       'filter_autop' => array(
         'weight' => 1,
-        'status' => 1,
-        'settings' => array(),
-      ),
-      'media_filter' => array(
-        'weight' => 2,
-        'status' => 1,
-        'settings' => array(),
-      ),
-      'filter_htmlcorrector' => array(
-        'weight' => 10,
-        'status' => 1,
-        'settings' => array(),
-      ),
-      'pathologic' => array(
-        'weight' => 50,
-        'status' => 1,
-        'settings' => array(
-          'local_paths' => 'http://fitspire.oxy.minasanor.genero.fi
-http://fitspire.toffe.minasanor.genero.fi
-http://fitspire.marcus.minasanor.genero.fi
-http://fitspire.aunion.minasanor.genero.fi',
-          'protocol_style' => 'path',
-        ),
-      ),
-    ),
-  );
-
-  // Exported format: Unrestricted (any HTML attributes).
-  $formats['unrestricted_any_html_attributes_'] = array(
-    'format' => 'unrestricted_any_html_attributes_',
-    'name' => 'Unrestricted (any HTML attributes)',
-    'cache' => 1,
-    'status' => 1,
-    'weight' => 0,
-    'filters' => array(
-      'filter_autop' => array(
-        'weight' => 0,
         'status' => 1,
         'settings' => array(),
       ),

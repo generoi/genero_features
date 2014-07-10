@@ -24,18 +24,13 @@ function admin_ui_feature_defaultconfig_user_default_permissions() {
   // Exported permission: 'access administration menu'.
   $permissions['access administration menu'] = array(
     'name' => 'access administration menu',
-    'roles' => array(),
-    'module' => 'admin_menu',
-  );
-
-  // Exported permission: 'access overlay'.
-  $permissions['access overlay'] = array(
-    'name' => 'access overlay',
     'roles' => array(
-      'Blogger' => 'Blogger',
+      'Site manager' => 'Site manager',
+      'Store Manager' => 'Store Manager',
+      'Warehouse' => 'Warehouse',
       'administrator' => 'administrator',
     ),
-    'module' => 'overlay',
+    'module' => 'admin_menu',
   );
 
   return $permissions;
