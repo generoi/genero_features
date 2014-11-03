@@ -5,7 +5,6 @@ dependencies[] = addressfield
 dependencies[] = addthis
 dependencies[] = addthis_displays
 dependencies[] = cloud_zoom
-dependencies[] = color
 dependencies[] = comment
 dependencies[] = commerce
 dependencies[] = commerce_add_to_cart_confirmation
