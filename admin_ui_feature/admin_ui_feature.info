@@ -22,7 +22,6 @@ dependencies[] = options_element
 dependencies[] = pasteformat
 dependencies[] = pathologic
 dependencies[] = role_export
-dependencies[] = simplified_menu_admin
 dependencies[] = single_toolbar
 dependencies[] = strongarm
 dependencies[] = wysiwyg
