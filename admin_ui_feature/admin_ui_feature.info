@@ -13,7 +13,6 @@ dependencies[] = chosen
 dependencies[] = date_popup_authored
 dependencies[] = defaultconfig
 dependencies[] = diff
-dependencies[] = edit
 dependencies[] = features
 dependencies[] = filter
 dependencies[] = media_wysiwyg
