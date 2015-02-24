@@ -16,7 +16,6 @@ dependencies[] = clientside_validation
 dependencies[] = clientside_validation_form
 dependencies[] = clientside_validation_html5
 dependencies[] = color
-dependencies[] = comment
 dependencies[] = contextual
 dependencies[] = ctools
 dependencies[] = date
